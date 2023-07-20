@@ -1,0 +1,44 @@
+name: Previsão da temperatura do mar
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+   - cron: "0 8 * * *"
+ 
+jobs:
+  import-data:
+    runs-on: ubuntu-latest
+    env:
+      C_PWD: ${{ secrets.C_PWD }}
+      C_USERNAME: ${{ secrets.C_USERNAME }}
+    steps:
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Install packages
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::tidyverse 
+            any::CopernicusMarine
+            any::lubridate
+            any::ncdf4
+            any::glue
+            any::sf
+
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Import data
+        run: Rscript temperatura_mar_diaria.R ${{ secrets.C_PWD }} ${{ secrets.C_USERNAME }}
+
+      - name: Commit results
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add --all
+          git commit -am "add data"
+          git push
