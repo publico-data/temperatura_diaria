@@ -153,7 +153,12 @@ todas_as_horas$lon <- as.numeric(todas_as_horas$lon)
 praias_heatspots_horas <- left_join(so_praias_com_heatspots,todas_as_horas) %>%
   mutate(time=ymd_hms(time))%>%
   mutate(time=time-1800) %>% 
-  select(-geometry,-corrdenadas_heatspot)
+  select(-corrdenadas_heatspot, -lat, -lon)
+
+praias_heatspots_horas <- praias_heatspots_horas %>% 
+  mutate(lat = (st_coordinates(geometry)[,2]), lon = (st_coordinates(geometry)[,1])) %>% 
+  select(-geometry)
+
 
 praias_heatspots_horas <- praias_heatspots_horas %>% 
   mutate(
@@ -161,9 +166,9 @@ praias_heatspots_horas <- praias_heatspots_horas %>%
   ) %>% 
   filter(
     hours >= 8 & hours <= 20
-  )
+  ) %>% 
+  select(-hours)
   
 
 write_rds(praias_heatspots_horas,"praias_completas.rds")
 write_csv(praias_heatspots_horas,"praias_completas.csv")
-  
