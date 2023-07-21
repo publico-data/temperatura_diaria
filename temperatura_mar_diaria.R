@@ -154,6 +154,14 @@ praias_heatspots_horas <- left_join(so_praias_com_heatspots,todas_as_horas) %>%
   mutate(time=ymd_hms(time))%>%
   mutate(time=time-1800) %>% 
   select(-geometry,-corrdenadas_heatspot)
+
+praias_heatspots_horas <- praias_heatspots_horas %>% 
+  mutate(
+    hours = hour(time)
+  ) %>% 
+  filter(
+    hours >= 8 & hours <= 20
+  )
   
 
 write_rds(praias_heatspots_horas,"praias_completas.rds")
