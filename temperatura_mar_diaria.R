@@ -170,5 +170,12 @@ praias_heatspots_horas <- praias_heatspots_horas %>%
   select(-hours)
   
 
+praias_nomes_finais <- read_delim("praias_nomes_finais.csv", delim = ";")
+
+praias_heatspots_horas <- praias_heatspots_horas %>% 
+  left_join(praias_nomes_finais) %>% 
+  select(-nome_praia) %>% 
+  rename("nome_praia"="nome_praia_final")
+
 write_rds(praias_heatspots_horas,"praias_completas.rds")
 write_csv(praias_heatspots_horas,"praias_completas.csv")
