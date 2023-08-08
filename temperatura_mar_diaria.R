@@ -15,7 +15,7 @@ options(CopernicusMarine_pwd = pwd)
 
 #Portugal Continental
 start_date <- ymd_hms(glue("{Sys.Date()} 08:00:00"))               # start_date
-end_date <- ymd_hms(glue("{Sys.Date()+3} 20:00:00"))               # end_date
+end_date <- ymd_hms(glue("{Sys.Date()} 20:00:00"))               # end_date
 
   copernicus_download_motu(
     destination   = glue("data/continente.nc"),
