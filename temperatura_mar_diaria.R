@@ -177,7 +177,8 @@ tectos <- historico %>%
   filter(day==day(Sys.Date())) %>% 
   mutate(min=mean-std) %>% 
   mutate(max=mean+std) %>% 
-  select(-mes,-day,-mean,-std)
+  select(-mes,-day,-mean,-std) %>% 
+  rename("Concelho"="concelho")
 
 praias_nomes_finais <- read_delim("praias_nomes_finais.csv", delim = ";")
 
@@ -187,8 +188,8 @@ tectos <- tectos %>%
 
 
 praias_heatspots_horas <- praias_heatspots_horas %>% 
-  left_join(praias_nomes_finais, by="nome_praia") %>% 
-  select(-nome_praia, -Concelho.x, -Concelho.y,-geometry) %>% 
+  left_join(praias_nomes_finais) %>% 
+  select(-nome_praia,-geometry) %>% 
   rename("nome_praia"="nome_praia_final")
 
 tectos <- tectos %>% 
