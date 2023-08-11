@@ -188,6 +188,7 @@ tectos <- tectos %>%
 
 
 praias_heatspots_horas <- praias_heatspots_horas %>% 
+  st_drop_geometry()%>% 
   left_join(praias_nomes_finais) %>% 
   select(-nome_praia,-geometry) %>% 
   rename("nome_praia"="nome_praia_final")
