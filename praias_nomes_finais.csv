@@ -1,4 +1,4 @@
-﻿nome_praia;geometry;Concelho;nome_praia_final
+nome_praia;geometry;Concelho;nome_praia_final
 Foz do Minho;c(-8.86416999999994, 41.8669400000001);Caminha;Foz do Minho (Caminha)
 Moledo (Norte);c(-8.86619099999996, 41.852895);Caminha;Moledo Norte (Caminha)
 Moledo (Mergulho e Vapor);c(-8.86631899999998, 41.8499780000001);Caminha;Moledo - Mergulho e Vapor (Caminha)
@@ -182,7 +182,7 @@ Pedra do Ouro;c(-9.04716699999994, 39.725967);Alcobaça;Pedra do Ouro (Alcobaça
 Polvoeira;c(-9.04989999999998, 39.716283);Alcobaça;Polvoeira (Alcobaça)
 Paredes de Vitória Norte;c(-9.05018599999994, 39.7030040000001);Alcobaça;Paredes de Vitória Norte (Alcobaça)
 Paredes de Vitória Sul;c(-9.05053999999996, 39.7008900000001);Alcobaça;Paredes de Vitória Sul (Alcobaça)
-Corvo/Areia;c(-31.12188, 39.6726200000001);Corvo ;Areia (Corvo)
+Corvo/Areia;c(-31.12188, 39.6726200000001);Alcobaça ;Areia (Corvo)
 Légua;c(-9.06983299999996, 39.6535670000001);Alcobaça;Légua (Alcobaça)
 Nazaré Norte;c(-9.07431699999995, 39.6007740000001);Alcobaça;Nazaré Norte (Alcobaça)
 Nazaré Sul;c(-9.07372199999998, 39.5948730000001);Alcobaça;Nazaré Sul (Alcobaça)

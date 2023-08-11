@@ -169,13 +169,34 @@ praias_heatspots_horas <- praias_heatspots_horas %>%
   ) %>% 
   select(-hours)
   
+historico <- read_rds("historico.rds")
 
-praias_nomes_finais <- read_delim("praias_nomes_finais.csv", delim = ";", )
+tectos <- historico %>% 
+  ungroup() %>% 
+  filter(mes==month(Sys.Date())) %>% 
+  filter(day==day(Sys.Date())) %>% 
+  mutate(min=mean-std) %>% 
+  mutate(max=mean+std) %>% 
+  select(-mes,-day,-mean,-std)
+
+praias_nomes_finais <- read_delim("praias_nomes_finais.csv", delim = ";")
+
+tectos <- tectos %>% 
+  left_join(praias_nomes_finais) %>% 
+  select(nome_praia_final,Concelho,min,max)
+
 
 praias_heatspots_horas <- praias_heatspots_horas %>% 
   left_join(praias_nomes_finais, by="nome_praia") %>% 
   select(-nome_praia, -Concelho.x, -Concelho.y,-geometry) %>% 
   rename("nome_praia"="nome_praia_final")
+
+tectos <- tectos %>% 
+  rename("nome_praia"="nome_praia_final")
+
+praias_heatspots_horas <- praias_heatspots_horas %>% 
+  left_join(tectos)
+
 
 write_rds(praias_heatspots_horas,"praias_completas.rds")
 write_csv(praias_heatspots_horas,"praias_completas.csv")
