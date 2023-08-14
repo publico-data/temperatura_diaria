@@ -186,7 +186,7 @@ praias_nomes_finais <- read_delim("praias_nomes_finais.csv", delim = ";")
 
 tectos <- tectos %>% 
   left_join(praias_nomes_finais) %>% 
-  select(nome_praia_final,Concelho,min,max)
+  select(nome_praia_final,Concelho,min,max,min2,max2)
 
 
 praias_heatspots_horas <- praias_heatspots_horas %>% 
