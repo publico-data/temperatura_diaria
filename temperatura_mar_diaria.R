@@ -177,6 +177,8 @@ tectos <- historico %>%
   filter(day==day(Sys.Date())) %>% 
   mutate(min=mean-std) %>% 
   mutate(max=mean+std) %>% 
+  mutate(min2=mean-(2*std)) %>% 
+  mutate(max2=mean+(2*std)) %>% 
   select(-mes,-day,-mean,-std) %>% 
   rename("Concelho"="concelho")
 
@@ -202,3 +204,4 @@ praias_heatspots_horas <- praias_heatspots_horas %>%
 
 write_rds(praias_heatspots_horas,"praias_completas.rds")
 write_csv(praias_heatspots_horas,"praias_completas.csv")
+
