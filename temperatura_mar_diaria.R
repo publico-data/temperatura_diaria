@@ -199,8 +199,8 @@ tectos <- tectos %>%
   rename("nome_praia"="nome_praia_final")
 
 praias_heatspots_horas <- praias_heatspots_horas %>% 
-  left_join(tectos)
-
+  left_join(tectos) %>% 
+  replace_na(list(nome_praia = "Corvo/Areia (Corvo)"))
 
 write_rds(praias_heatspots_horas,"praias_completas.rds")
 write_csv(praias_heatspots_horas,"praias_completas.csv")
