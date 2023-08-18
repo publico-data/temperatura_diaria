@@ -182,7 +182,7 @@ tectos <- historico %>%
   select(-mes,-day,-mean,-std) %>% 
   rename("Concelho"="concelho")
 
-praias_nomes_finais <- read_delim("praias_nomes_finais.csv", delim = ";")
+praias_nomes_finais <- read_delim("praias_nomes_finais.csv", delim = ",")
 
 tectos <- tectos %>% 
   left_join(praias_nomes_finais) %>% 
