@@ -13,16 +13,16 @@ user <- args[2]
 options(CopernicusMarine_uid = user)
 options(CopernicusMarine_pwd = pwd)
 
+
 #Portugal Continental
 start_date <- ymd_hms(glue("{Sys.Date()} 08:00:00"))               # start_date
 end_date <- ymd_hms(glue("{Sys.Date()+1} 20:00:00"))               # end_date
 
-  copernicus_download_motu(
+cms_download_subset(
     destination   = glue("data/continente.nc"),
     product       = "IBI_ANALYSISFORECAST_PHY_005_001",
     layer         = "cmems_mod_ibi_phy_anfc_0.027deg-2D_PT1H-m",
     variable      = "thetao",
-    output        = "netcdf",
     region        = c(-9.646719069971319, 36.7143279919028, -7.364793639893833, 41.884404655537004),
     timerange     = c(start_date, end_date),
     overwrite     = TRUE
@@ -30,24 +30,22 @@ end_date <- ymd_hms(glue("{Sys.Date()+1} 20:00:00"))               # end_date
   
   
   #Madeira
-  copernicus_download_motu(
+cms_download_subset(
     destination   = glue("data/madeira.nc"),
     product       = "IBI_ANALYSISFORECAST_PHY_005_001",
     layer         = "cmems_mod_ibi_phy_anfc_0.027deg-2D_PT1H-m",
     variable      = "thetao",
-    output        = "netcdf",
     region        = c(-17.31389417651776, 32.37276288911421, -16.23795594074014,  33.14961360086701),
     timerange     = c(start_date, end_date),
     overwrite     = TRUE
   )
   
   #Açores
-  copernicus_download_motu(
+cms_download_subset(
     destination   = glue("data/acores.nc"),
     product       = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
     layer         = "cmems_mod_glo_phy_anfc_0.083deg_PT1H-m",
     variable      = "thetao",
-    output        = "netcdf",
     region        = c(-31.38975950285971, 36.822334920430556, -24.94078489348473, 39.827095662618056),
     verticalrange = c(0.494024991989134,0.494024991989136),
     timerange     = c(start_date, end_date),
