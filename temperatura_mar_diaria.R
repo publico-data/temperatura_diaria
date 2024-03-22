@@ -4,6 +4,7 @@ library(lubridate)
 library(glue)
 library(tidyverse)
 library(sf)
+#Código com as novas funções do Copernicus
 
 # Get the secret key from command-line arguments
 args <- commandArgs(trailingOnly = TRUE)
