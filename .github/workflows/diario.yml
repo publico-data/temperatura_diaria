@@ -28,6 +28,7 @@ jobs:
             any::ncdf4
             any::glue
             any::sf
+            any::reticulate
 
       - name: Check out repository
         uses: actions/checkout@v3
