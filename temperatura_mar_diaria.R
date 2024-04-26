@@ -59,6 +59,8 @@ original_dir <- getwd()
 # 
 #   
 
+args <- commandArgs(trailingOnly = TRUE)
+
 pwd <- args[1]
 user <- args[2]
 
