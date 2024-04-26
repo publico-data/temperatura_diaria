@@ -1,61 +1,176 @@
+library(reticulate)
 library(CopernicusMarine)
 library(ncdf4)
 library(lubridate)
 library(glue)
 library(tidyverse)
 library(sf)
+library(httr2)
+
+original_dir <- getwd()
+
 #Código com as novas funções do Copernicus
 
 # Get the secret key from command-line arguments
-args <- commandArgs(trailingOnly = TRUE)
+# args <- commandArgs(trailingOnly = TRUE)
+
+# 
+# options(CopernicusMarine_uid = user)
+# options(CopernicusMarine_pwd = pwd)
+# 
+# 
+# #Portugal Continental
+# start_date <- ymd_hms(glue("{Sys.Date()} 08:00:00"))               # start_date
+# end_date <- ymd_hms(glue("{Sys.Date()+1} 20:00:00"))               # end_date
+# 
+# cms_download_subset_ultimate(
+#     destination   = glue("data/continente.nc"),
+#     product       = "IBI_ANALYSISFORECAST_PHY_005_001",
+#     layer         = "cmems_mod_ibi_phy_anfc_0.027deg-2D_PT1H-m",
+#     variable      = "thetao",
+#     region        = c(-9.646719069971319, 36.7143279919028, -7.364793639893833, 41.884404655537004),
+#     timerange     = c(start_date, end_date),
+#     overwrite     = TRUE
+#   )
+#   
+#   
+#   #Madeira
+# cms_download_subset(
+#     destination   = glue("data/madeira.nc"),
+#     product       = "IBI_ANALYSISFORECAST_PHY_005_001",
+#     layer         = "cmems_mod_ibi_phy_anfc_0.027deg-2D_PT1H-m",
+#     variable      = "thetao",
+#     region        = c(-17.31389417651776, 32.37276288911421, -16.23795594074014,  33.14961360086701),
+#     timerange     = c(start_date, end_date),
+#     overwrite     = TRUE
+#   )
+#   
+#   #Açores
+# cms_download_subset(
+#     destination   = glue("data/acores.nc"),
+#     product       = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
+#     layer         = "cmems_mod_glo_phy_anfc_0.083deg_PT1H-m",
+#     variable      = "thetao",
+#     region        = c(-31.38975950285971, 36.822334920430556, -24.94078489348473, 39.827095662618056),
+#     verticalrange = c(0.494024991989134,0.494024991989136),
+#     timerange     = c(start_date, end_date),
+#     overwrite     = TRUE
+#   )
+# 
+#   
+
 pwd <- args[1]
 user <- args[2]
 
-options(CopernicusMarine_uid = user)
-options(CopernicusMarine_pwd = pwd)
+install_python() 
+
+virtualenv_create(envname = "praias")
+virtualenv_install("praias", packages = c("copernicusmarine"))
+
+use_virtualenv("praias", required = TRUE)
+py_install("copernicusmarine")
+
+cm <- import("copernicusmarine")
+os <- import("os")
+
+# Define the desired output directory relative to the R project root
+output_directory <- "data/"
+
+# Use the absolute path for the output directory based on R's getwd()
+absolute_output_directory <- os$path$join(os$getcwd(), output_directory)
+
+# Check if the current directory is not already 'data/' and change if necessary
+if (os$getcwd() != absolute_output_directory) {
+  if (!os$path$exists(absolute_output_directory)) {
+    os$makedirs(absolute_output_directory)
+  }
+  os$chdir(absolute_output_directory)
+}
+
+
+# Check and delete existing credentials file if it exists
+credentials_file <- os$path$expanduser("~/.copernicusmarine/.copernicusmarine-credentials")
+if (os$path$exists(credentials_file)) {
+  os$remove(credentials_file)
+}
+
+
+cm$login(user, pwd)  # Replace with your credentials
 
 
 #Portugal Continental
-start_date <- ymd_hms(glue("{Sys.Date()} 08:00:00"))               # start_date
-end_date <- ymd_hms(glue("{Sys.Date()+1} 20:00:00"))               # end_date
+start_date <- format(ymd_hms(glue("{Sys.Date()} 08:00:00")), "%Y-%m-%d %H:%M:%S")
+end_date <- format(ymd_hms(glue("{Sys.Date() + 1} 20:00:00")), "%Y-%m-%d %H:%M:%S")
 
-cms_download_subset(
-    destination   = glue("data/continente.nc"),
-    product       = "IBI_ANALYSISFORECAST_PHY_005_001",
-    layer         = "cmems_mod_ibi_phy_anfc_0.027deg-2D_PT1H-m",
-    variable      = "thetao",
-    region        = c(-9.646719069971319, 36.7143279919028, -7.364793639893833, 41.884404655537004),
-    timerange     = c(start_date, end_date),
-    overwrite     = TRUE
-  )
-  
-  
-  #Madeira
-cms_download_subset(
-    destination   = glue("data/madeira.nc"),
-    product       = "IBI_ANALYSISFORECAST_PHY_005_001",
-    layer         = "cmems_mod_ibi_phy_anfc_0.027deg-2D_PT1H-m",
-    variable      = "thetao",
-    region        = c(-17.31389417651776, 32.37276288911421, -16.23795594074014,  33.14961360086701),
-    timerange     = c(start_date, end_date),
-    overwrite     = TRUE
-  )
-  
-  #Açores
-cms_download_subset(
-    destination   = glue("data/acores.nc"),
-    product       = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
-    layer         = "cmems_mod_glo_phy_anfc_0.083deg_PT1H-m",
-    variable      = "thetao",
-    region        = c(-31.38975950285971, 36.822334920430556, -24.94078489348473, 39.827095662618056),
-    verticalrange = c(0.494024991989134,0.494024991989136),
-    timerange     = c(start_date, end_date),
-    overwrite     = TRUE
-  )
 
-  
-  
-  nc_df <- nc_open("data/continente.nc")
+result <- cm$subset(
+  dataset_id = "cmems_mod_ibi_phy_anfc_0.027deg-2D_PT1H-m",
+  start_datetime = start_date,
+  end_datetime = end_date,
+  variables = list("thetao"),
+  minimum_longitude = -9.64671906997131,
+  maximum_longitude = 7.364793639893833,
+  minimum_latitude = 36.7143279919028,
+  maximum_latitude = 41.884404655537004,
+  force_download = TRUE,
+)
+
+# Rename the downloaded file
+
+#get the file inside data that starts with "cmems_mod"
+original_file_name <- list.files(pattern = "cmems_mod")
+new_file_name <- "continente.nc"  # This is the new name you want to give the file
+os$rename(original_file_name, new_file_name)
+
+
+
+#Madeira
+
+result <- cm$subset(
+  dataset_id = "cmems_mod_ibi_phy_anfc_0.027deg-2D_PT1H-m",
+  start_datetime = start_date,
+  end_datetime = end_date,
+  variables = list("thetao"),
+  minimum_longitude = -17.31389417651776,
+  maximum_longitude = -16.23795594074014,
+  minimum_latitude = 32.37276288911421,
+  maximum_latitude = 33.14961360086701,
+  force_download = TRUE,
+)
+
+# Rename the downloaded file
+
+#get the file inside data that starts with "cmems_mod"
+original_file_name <- list.files(pattern = "cmems_mod")
+new_file_name <- "madeira.nc"  # This is the new name you want to give the file
+os$rename(original_file_name, new_file_name)
+
+
+
+#Açores
+
+result <- cm$subset(
+  dataset_id = "cmems_mod_glo_phy_anfc_0.083deg_PT1H-m",
+  start_datetime = start_date,
+  end_datetime = end_date,
+  variables = list("thetao"),
+  minimum_longitude = -31.38975950285971,
+  maximum_longitude = -24.94078489348473,
+  minimum_latitude = 36.822334920430556,
+  maximum_latitude = 33.14961360086701,
+  force_download = TRUE,
+)
+
+# Rename the downloaded file
+
+#get the file inside data that starts with "cmems_mod"
+original_file_name <- list.files(pattern = "cmems_mod")
+new_file_name <- "acores.nc"  # This is the new name you want to give the file
+os$rename(original_file_name, new_file_name)
+
+setwd(original_dir)
+
+nc_df <- nc_open("data/continente.nc")
   
   
       dim_lon <- ncvar_get(nc_df, "longitude")
@@ -116,7 +231,7 @@ cms_download_subset(
       
       
 pais_inteiro <- bind_rows(continente, madeira, acores) %>% 
-  filter(time==ymd_hms(glue("{Sys.Date()} 08:30:00")))
+  filter(time==ymd_hms(glue("{Sys.Date()} 08:00:00")))
 pais_inteiro$lat <- as.numeric(pais_inteiro$lat)
 pais_inteiro$lon <- as.numeric(pais_inteiro$lon)
 pais_inteiro$thetao <- as.numeric(pais_inteiro$thetao)
@@ -151,7 +266,6 @@ todas_as_horas$lon <- as.numeric(todas_as_horas$lon)
 
 praias_heatspots_horas <- left_join(so_praias_com_heatspots,todas_as_horas) %>%
   mutate(time=ymd_hms(time))%>%
-  mutate(time=time-1800) %>% 
   select(-corrdenadas_heatspot, -lat, -lon)
 
 praias_heatspots_horas <- praias_heatspots_horas %>% 
