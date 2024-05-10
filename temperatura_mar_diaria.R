@@ -61,8 +61,11 @@ original_dir <- getwd()
 
 args <- commandArgs(trailingOnly = TRUE)
 
-pwd <- args[1]
-user <- args[2]
+# pwd <- args[1]
+# user <- args[2]
+
+user <- "jpinto3"
+pwd <- "QTX*mkz*jbh5hgj@xqp"
 
 install_python() 
 
@@ -190,6 +193,10 @@ nc_df <- nc_open("data/continente.nc")
       
       continente <- data.frame(cbind(coords, temperatura))
       names(continente) <- c("lon", "lat", "time", "thetao")
+      
+      continente <- continente %>% 
+        distinct(lon, lat, time, .keep_all = TRUE) %>% 
+        filter(!is.na(thetao))
     
   #Madeira    
   nc_df <- nc_open("data/madeira.nc")
@@ -210,6 +217,9 @@ nc_df <- nc_open("data/continente.nc")
       
       madeira <- data.frame(cbind(coords, temperatura))
       names(madeira) <- c("lon", "lat", "time", "thetao")
+      madeira <- madeira %>% 
+        distinct(lon, lat, time, .keep_all = TRUE) %>% 
+        filter(!is.na(thetao))
       
   #Açores
       nc_df <- nc_open("data/acores.nc")
@@ -230,6 +240,9 @@ nc_df <- nc_open("data/continente.nc")
       
       acores <- data.frame(cbind(coords, temperatura))
       names(acores) <- c("lon", "lat", "time", "thetao")
+      acores <- acores %>% 
+        distinct(lon, lat, time, .keep_all = TRUE) %>% 
+        filter(!is.na(thetao))
       
       
 pais_inteiro <- bind_rows(continente, madeira, acores) %>% 
@@ -242,7 +255,7 @@ heatspots <- read_rds("coordenadas_heatspots.rds")
 heatspots <- heatspots %>% 
   rename(geometry = coordenadas_praia) %>% 
   mutate(lat = (st_coordinates(geometry)[,2]), lon = (st_coordinates(geometry)[,1])) %>%
-  select(-geometry,-dist)
+  select(-geometry)
 
 praias_com_concelhos <- read_rds("praias_com_concelhos.rds")
 praias_com_concelhos <- praias_com_concelhos %>% 
@@ -250,9 +263,6 @@ praias_com_concelhos <- praias_com_concelhos %>%
   
 #juntar tudo
 
-praias_com_heatspots <- left_join(praias_com_concelhos,heatspots)
-praias_com_heatspots <- praias_com_heatspots %>% select(-lat,-lon) %>% 
-  mutate(lat = (st_coordinates(corrdenadas_heatspot)[,2]), lon = (st_coordinates(corrdenadas_heatspot)[,1]))
 
 so_praias_com_heatspots <- left_join(praias_com_heatspots,pais_inteiro) %>% 
   select(-thetao,-time)
@@ -320,3 +330,5 @@ praias_heatspots_horas <- praias_heatspots_horas %>%
 write_rds(praias_heatspots_horas,"praias_completas.rds")
 write_csv(praias_heatspots_horas,"praias_completas.csv")
 
+
+# write_rds(pais_inteiro,"dia.rds")
