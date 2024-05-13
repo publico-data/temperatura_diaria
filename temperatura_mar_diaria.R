@@ -61,11 +61,10 @@ original_dir <- getwd()
 
 args <- commandArgs(trailingOnly = TRUE)
 
-# pwd <- args[1]
-# user <- args[2]
+pwd <- args[1]
+user <- args[2]
 
-user <- "jpinto3"
-pwd <- "QTX*mkz*jbh5hgj@xqp"
+
 
 install_python() 
 
@@ -262,6 +261,9 @@ praias_com_concelhos <- praias_com_concelhos %>%
   mutate(lat = (st_coordinates(geometry)[,2]), lon = (st_coordinates(geometry)[,1]))
   
 #juntar tudo
+praias_com_heatspots <- left_join(praias_com_concelhos,heatspots)
+praias_com_heatspots <- praias_com_heatspots %>% select(-lat,-lon) %>% 
+  mutate(lat = (st_coordinates(corrdenadas_heatspot)[,2]), lon = (st_coordinates(corrdenadas_heatspot)[,1]))
 
 
 so_praias_com_heatspots <- left_join(praias_com_heatspots,pais_inteiro) %>% 
