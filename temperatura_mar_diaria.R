@@ -120,7 +120,7 @@ result <- cm$subset(
   force_download = TRUE,
 )
 
-# Rename the downloaded file
+# Rename the downloaded files
 
 #get the file inside data that starts with "cmems_mod"
 original_file_name <- list.files(pattern = "cmems_mod")
