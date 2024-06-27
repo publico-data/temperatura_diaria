@@ -298,6 +298,13 @@ praias_heatspots_horas <- praias_heatspots_horas %>%
     hours >= 8 & hours <= 20
   ) %>% 
   select(-hours)
+
+#round hour over
+
+praias_heatspots_horas <- praias_heatspots_horas %>% 
+  mutate(
+    time = round_date(time, "hour")
+  )
   
 historico <- read_rds("historico.rds")
 
