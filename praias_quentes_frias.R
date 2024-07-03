@@ -30,7 +30,7 @@ continente <- continente %>%
   distinct(lon, lat, time, .keep_all = TRUE) %>% 
   filter(!is.na(thetao))
 
-#Madeira    
+#Madeira
 nc_df <- nc_open("data/madeira.nc")
 
 
@@ -49,8 +49,8 @@ temperatura <- ncvar_get(nc_df, "thetao", collapse_degen=FALSE)
 
 madeira <- data.frame(cbind(coords, temperatura))
 names(madeira) <- c("lon", "lat", "time", "thetao")
-madeira <- madeira %>% 
-  distinct(lon, lat, time, .keep_all = TRUE) %>% 
+madeira <- madeira %>%
+  distinct(lon, lat, time, .keep_all = TRUE) %>%
   filter(!is.na(thetao))
 
 #Açores
@@ -72,12 +72,12 @@ temperatura <- ncvar_get(nc_df, "thetao", collapse_degen=FALSE)
 
 acores <- data.frame(cbind(coords, temperatura))
 names(acores) <- c("lon", "lat", "time", "thetao")
-acores <- acores %>% 
-  distinct(lon, lat, time, .keep_all = TRUE) %>% 
+acores <- acores %>%
+  distinct(lon, lat, time, .keep_all = TRUE) %>%
   filter(!is.na(thetao))
 
 
-pais_inteiro <- bind_rows(continente, madeira, acores) %>% 
+pais_inteiro <- bind_rows(continente) %>% 
   filter(time==ymd_hms(glue("{Sys.Date()} 08:00:00")))
 pais_inteiro$lat <- as.numeric(pais_inteiro$lat)
 pais_inteiro$lon <- as.numeric(pais_inteiro$lon)
@@ -103,7 +103,7 @@ so_praias_com_heatspots <- left_join(praias_com_heatspots,pais_inteiro) %>%
   select(-thetao,-time)
 
 #Ir buscar todas as horas para juntar às praias com heatspots
-todas_as_horas <- bind_rows(continente, madeira, acores)
+todas_as_horas <- bind_rows(continente, madeira, acores) #, madeira, acores"
 
 todas_as_horas$lat <- as.numeric(todas_as_horas$lat)
 todas_as_horas$lon <- as.numeric(todas_as_horas$lon)
@@ -183,11 +183,13 @@ praias_above_avg <- praias_above_avg %>%
   ) %>% 
   select(-hours,-lat,-lon,-Concelho)
 
+write.csv(praias_above_avg, "praias_above_avg.csv")
+
 #Top 10 com maiores diferenças
 
 praias_above_avg_top_10 <- praias_above_avg %>% 
   filter(
-    day(time) == 27
+    day(time) == 02
   ) %>% 
   arrange(desc(dif)) %>% 
   select(nome_praia,thetao,mean,dif) %>% 
@@ -196,7 +198,7 @@ praias_above_avg_top_10 <- praias_above_avg %>%
 
 praias_below_avg_top_10 <- praias_above_avg %>% 
   filter(
-    day(time) == 27
+    day(time) == 02
   ) %>% 
   arrange(dif) %>% 
   select(nome_praia,thetao,mean,dif) %>% 
