@@ -189,7 +189,7 @@ write.csv(praias_above_avg, "praias_above_avg.csv")
 
 praias_above_avg_top_10 <- praias_above_avg %>% 
   filter(
-    day(time) == 02
+    day(time) == 26
   ) %>% 
   arrange(desc(dif)) %>% 
   select(nome_praia,thetao,mean,dif) %>% 
@@ -198,7 +198,7 @@ praias_above_avg_top_10 <- praias_above_avg %>%
 
 praias_below_avg_top_10 <- praias_above_avg %>% 
   filter(
-    day(time) == 02
+    day(time) == 26
   ) %>% 
   arrange(dif) %>% 
   select(nome_praia,thetao,mean,dif) %>% 
