@@ -109,7 +109,7 @@ end_date <- format(ymd_hms(glue("{Sys.Date() + 1} 20:00:00")), "%Y-%m-%d %H:%M:%
 
 result <- cm$subset(
   dataset_id = "cmems_mod_ibi_phy_anfc_0.027deg-2D_PT1H-m",
-  dataset_version = "202211",
+  dataset_version = "202406",
   start_datetime = start_date,
   end_datetime = end_date,
   variables = list("thetao"),
@@ -133,7 +133,7 @@ os$rename(original_file_name, new_file_name)
 
 result <- cm$subset(
   dataset_id = "cmems_mod_ibi_phy_anfc_0.027deg-2D_PT1H-m",
-  dataset_version = "202211",
+  dataset_version = "202406",
   start_datetime = start_date,
   end_datetime = end_date,
   variables = list("thetao"),
@@ -157,7 +157,7 @@ os$rename(original_file_name, new_file_name)
 
 result <- cm$subset(
   dataset_id = "cmems_mod_glo_phy_anfc_0.083deg_PT1H-m",
-  dataset_version = "202211",
+  dataset_version = "202406",
   start_datetime = start_date,
   end_datetime = end_date,
   variables = list("thetao"),
