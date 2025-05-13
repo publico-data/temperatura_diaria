@@ -118,7 +118,7 @@ result <- cm$subset(
   maximum_latitude = 41.884404655537004
 )
 
-# Rename the downloaded files
+#Rename the downloaded files
 
 #get the file inside data that starts with "cmems_mod"
 original_file_name <- list.files(pattern = "cmems_mod")
