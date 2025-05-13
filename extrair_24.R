@@ -61,24 +61,24 @@ original_dir <- getwd()
 
 args <- commandArgs(trailingOnly = TRUE)
 
-pwd <- args[1]
-user <- args[2]
+pwd <- "QTX*mkz*jbh5hgj@xqp"
+user <- "jpinto3"
 
 
 
 install_python() 
 
-virtualenv_create(envname = "praias")
-virtualenv_install("praias", packages = c("copernicusmarine"))
+virtualenv_create(envname = "praias24")
+virtualenv_install("praias24", packages = c("copernicusmarine"))
 
-use_virtualenv("praias", required = TRUE)
+use_virtualenv("praias24", required = TRUE)
 py_install("copernicusmarine")
 
 cm <- import("copernicusmarine")
 os <- import("os")
 
 # Define the desired output directory relative to the R project root
-output_directory <- "data/"
+output_directory <- "data24/"
 
 # Use the absolute path for the output directory based on R's getwd()
 absolute_output_directory <- os$path$join(os$getcwd(), output_directory)
@@ -103,8 +103,8 @@ cm$login(user, pwd)  # Replace with your credentials
 
 
 #Portugal Continental
-start_date <- format(ymd_hms(glue("{Sys.Date()} 08:00:00")), "%Y-%m-%d %H:%M:%S")
-end_date <- format(ymd_hms(glue("{Sys.Date() + 1} 20:00:00")), "%Y-%m-%d %H:%M:%S")
+start_date <- format(ymd_hms(glue("2024-06-01 08:00:00")), "%Y-%m-%d %H:%M:%S")
+end_date <- format(ymd_hms(glue("{Sys.Date() } 20:00:00")), "%Y-%m-%d %H:%M:%S")
 
 
 result <- cm$subset(
@@ -122,7 +122,7 @@ result <- cm$subset(
 
 #get the file inside data that starts with "cmems_mod"
 original_file_name <- list.files(pattern = "cmems_mod")
-new_file_name <- "continente.nc"  # This is the new name you want to give the file
+new_file_name <- "continente24.nc"  # This is the new name you want to give the file
 os$rename(original_file_name, new_file_name)
 
 
@@ -145,7 +145,7 @@ result <- cm$subset(
 
 #get the file inside data that starts with "cmems_mod"
 original_file_name <- list.files(pattern = "cmems_mod")
-new_file_name <- "madeira.nc"  # This is the new name you want to give the file
+new_file_name <- "madeira24.nc"  # This is the new name you want to give the file
 os$rename(original_file_name, new_file_name)
 
 
@@ -168,81 +168,81 @@ result <- cm$subset(
 
 #get the file inside data that starts with "cmems_mod"
 original_file_name <- list.files(pattern = "cmems_mod")
-new_file_name <- "acores.nc"  # This is the new name you want to give the file
+new_file_name <- "acores24.nc"  # This is the new name you want to give the file
 os$rename(original_file_name, new_file_name)
 
 setwd(original_dir)
 
-nc_df <- nc_open("data/continente.nc")
-  
-  
-      dim_lon <- ncvar_get(nc_df, "longitude")
-      dim_lat <- ncvar_get(nc_df, "latitude")
-      dim_time <- ncvar_get(nc_df, "time")
-      
-      t_units <- ncatt_get(nc_df, "time", "units")
-      t_ustr <- strsplit(t_units$value, " ")
-      t_dstr <- strsplit(unlist(t_ustr)[3], "-")
-      date <- ymd(t_dstr) + dhours(dim_time)
-      
-      coords <- as.matrix(expand.grid(dim_lon, dim_lat, date))
-      
-      temperatura <- ncvar_get(nc_df, "thetao", collapse_degen=FALSE)
-      
-      continente <- data.frame(cbind(coords, temperatura))
-      names(continente) <- c("lon", "lat", "time", "thetao")
-      
-      continente <- continente %>% 
-        distinct(lon, lat, time, .keep_all = TRUE) %>% 
-        filter(!is.na(thetao))
-    
-  #Madeira    
-  nc_df <- nc_open("data/madeira.nc")
-      
-      
-      dim_lon <- ncvar_get(nc_df, "longitude")
-      dim_lat <- ncvar_get(nc_df, "latitude")
-      dim_time <- ncvar_get(nc_df, "time")
-      
-      t_units <- ncatt_get(nc_df, "time", "units")
-      t_ustr <- strsplit(t_units$value, " ")
-      t_dstr <- strsplit(unlist(t_ustr)[3], "-")
-      date <- ymd(t_dstr) + dhours(dim_time)
-      
-      coords <- as.matrix(expand.grid(dim_lon, dim_lat, date))
-      
-      temperatura <- ncvar_get(nc_df, "thetao", collapse_degen=FALSE)
-      
-      madeira <- data.frame(cbind(coords, temperatura))
-      names(madeira) <- c("lon", "lat", "time", "thetao")
-      madeira <- madeira %>% 
-        distinct(lon, lat, time, .keep_all = TRUE) %>% 
-        filter(!is.na(thetao))
-      
-  #Açores
-      nc_df <- nc_open("data/acores.nc")
-      
-      
-      dim_lon <- ncvar_get(nc_df, "longitude")
-      dim_lat <- ncvar_get(nc_df, "latitude")
-      dim_time <- ncvar_get(nc_df, "time")
-      
-      t_units <- ncatt_get(nc_df, "time", "units")
-      t_ustr <- strsplit(t_units$value, " ")
-      t_dstr <- strsplit(unlist(t_ustr)[3], "-")
-      date <- ymd(t_dstr) + dhours(dim_time)
-      
-      coords <- as.matrix(expand.grid(dim_lon, dim_lat, date))
-      
-      temperatura <- ncvar_get(nc_df, "thetao", collapse_degen=FALSE)
-      
-      acores <- data.frame(cbind(coords, temperatura))
-      names(acores) <- c("lon", "lat", "time", "thetao")
-      acores <- acores %>% 
-        distinct(lon, lat, time, .keep_all = TRUE) %>% 
-        filter(!is.na(thetao))
-      
-      
+nc_df <- nc_open("data/continente24.nc")
+
+
+dim_lon <- ncvar_get(nc_df, "longitude")
+dim_lat <- ncvar_get(nc_df, "latitude")
+dim_time <- ncvar_get(nc_df, "time")
+
+t_units <- ncatt_get(nc_df, "time", "units")
+t_ustr <- strsplit(t_units$value, " ")
+t_dstr <- strsplit(unlist(t_ustr)[3], "-")
+date <- ymd(t_dstr) + dhours(dim_time)
+
+coords <- as.matrix(expand.grid(dim_lon, dim_lat, date))
+
+temperatura <- ncvar_get(nc_df, "thetao", collapse_degen=FALSE)
+
+continente <- data.frame(cbind(coords, temperatura))
+names(continente) <- c("lon", "lat", "time", "thetao")
+
+continente <- continente %>% 
+  distinct(lon, lat, time, .keep_all = TRUE) %>% 
+  filter(!is.na(thetao))
+
+#Madeira    
+nc_df <- nc_open("data/madeira24.nc")
+
+
+dim_lon <- ncvar_get(nc_df, "longitude")
+dim_lat <- ncvar_get(nc_df, "latitude")
+dim_time <- ncvar_get(nc_df, "time")
+
+t_units <- ncatt_get(nc_df, "time", "units")
+t_ustr <- strsplit(t_units$value, " ")
+t_dstr <- strsplit(unlist(t_ustr)[3], "-")
+date <- ymd(t_dstr) + dhours(dim_time)
+
+coords <- as.matrix(expand.grid(dim_lon, dim_lat, date))
+
+temperatura <- ncvar_get(nc_df, "thetao", collapse_degen=FALSE)
+
+madeira <- data.frame(cbind(coords, temperatura))
+names(madeira) <- c("lon", "lat", "time", "thetao")
+madeira <- madeira %>% 
+  distinct(lon, lat, time, .keep_all = TRUE) %>% 
+  filter(!is.na(thetao))
+
+#Açores
+nc_df <- nc_open("data/acores24.nc")
+
+
+dim_lon <- ncvar_get(nc_df, "longitude")
+dim_lat <- ncvar_get(nc_df, "latitude")
+dim_time <- ncvar_get(nc_df, "time")
+
+t_units <- ncatt_get(nc_df, "time", "units")
+t_ustr <- strsplit(t_units$value, " ")
+t_dstr <- strsplit(unlist(t_ustr)[3], "-")
+date <- ymd(t_dstr) + dhours(dim_time)
+
+coords <- as.matrix(expand.grid(dim_lon, dim_lat, date))
+
+temperatura <- ncvar_get(nc_df, "thetao", collapse_degen=FALSE)
+
+acores <- data.frame(cbind(coords, temperatura))
+names(acores) <- c("lon", "lat", "time", "thetao")
+acores <- acores %>% 
+  distinct(lon, lat, time, .keep_all = TRUE) %>% 
+  filter(!is.na(thetao))
+
+
 pais_inteiro <- bind_rows(continente, madeira, acores) %>% 
   filter(time==ymd_hms(glue("{Sys.Date()} 08:00:00")))
 pais_inteiro$lat <- as.numeric(pais_inteiro$lat)
@@ -258,7 +258,7 @@ heatspots <- heatspots %>%
 praias_com_concelhos <- read_rds("praias_com_concelhos.rds")
 praias_com_concelhos <- praias_com_concelhos %>% 
   mutate(lat = (st_coordinates(geometry)[,2]), lon = (st_coordinates(geometry)[,1]))
-  
+
 #juntar tudo
 praias_com_heatspots <- left_join(praias_com_concelhos,heatspots)
 praias_com_heatspots <- praias_com_heatspots %>% select(-lat,-lon) %>% 
@@ -301,7 +301,7 @@ praias_heatspots_horas <- praias_heatspots_horas %>%
   mutate(
     time = round_date(time, "hour")
   )
-  
+
 historico <- read_rds("historico.rds")
 
 tectos <- historico %>% 
@@ -335,8 +335,8 @@ praias_heatspots_horas <- praias_heatspots_horas %>%
   left_join(tectos) %>% 
   replace_na(list(nome_praia = "Corvo/Areia (Corvo)"))
 
-write_rds(praias_heatspots_horas,"praias_completas.rds")
-write_csv(praias_heatspots_horas,"praias_completas.csv")
+write_rds(praias_heatspots_horas,"praias_24.rds")
+write_csv(praias_heatspots_horas,"praias_24.csv")
 
 
 # write_rds(pais_inteiro,"dia.rds")
