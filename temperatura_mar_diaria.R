@@ -4,12 +4,16 @@ library(glue)
 library(tidyverse)
 library(sf)
 
-# Get credentials from command-line arguments
+# Get credentials
+# For local testing - hardcoded
+# pwd <- "QTX*mkz*jbh5hgj@xqp"
+# user <- "jpinto3"
+
+# Uncomment below to use command-line arguments instead
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) < 2) {
   stop("Usage: Rscript process_temperatura_mar.R <password> <username>")
 }
-
 pwd <- args[1]
 user <- args[2]
 
@@ -23,7 +27,7 @@ if (!file.exists("copernicus_download.py")) {
   stop("Error: copernicus_download.py not found in the current directory!")
 }
 
-# Run the Python script with credentials
+# Run the Python script (no arguments needed for local testing)
 result <- system2(
   "python",
   args = c("copernicus_download.py", pwd, user),
@@ -85,62 +89,97 @@ continente <- process_nc_file("data/continente.nc", "continente")
 madeira <- process_nc_file("data/madeira.nc", "madeira")
 acores <- process_nc_file("data/acores.nc", "acores")
 
-# Combine all regions and filter for 8:00 AM today
-pais_inteiro <- bind_rows(continente, madeira, acores) %>%
-  filter(time == ymd_hms(glue("{Sys.Date()} 08:00:00")))
-
-pais_inteiro$lat <- as.numeric(pais_inteiro$lat)
-pais_inteiro$lon <- as.numeric(pais_inteiro$lon)
-pais_inteiro$thetao <- as.numeric(pais_inteiro$thetao)
+# Get all hours data
+todas_as_horas <- bind_rows(continente, madeira, acores)
+todas_as_horas$lat <- as.numeric(todas_as_horas$lat)
+todas_as_horas$lon <- as.numeric(todas_as_horas$lon)
+todas_as_horas$thetao <- as.numeric(todas_as_horas$thetao)
 
 # Load beach data
 heatspots <- read_rds("coordenadas_heatspots.rds")
 heatspots <- heatspots %>%
   rename(geometry = coordenadas_praia) %>%
   mutate(
-    lat = st_coordinates(geometry)[, 2],
-    lon = st_coordinates(geometry)[, 1]
+    heatspot_lat = st_coordinates(geometry)[, 2],
+    heatspot_lon = st_coordinates(geometry)[, 1]
   ) %>%
   select(-geometry)
 
 praias_com_concelhos <- read_rds("praias_com_concelhos.rds")
-praias_com_concelhos <- praias_com_concelhos %>%
-  mutate(
-    lat = st_coordinates(geometry)[, 2],
-    lon = st_coordinates(geometry)[, 1]
-  )
 
 # Join beaches with hotspots
-praias_com_heatspots <- left_join(praias_com_concelhos, heatspots)
-praias_com_heatspots <- praias_com_heatspots %>%
-  select(-lat, -lon) %>%
+praias_com_heatspots <- left_join(praias_com_concelhos, heatspots) %>%
   mutate(
-    lat = st_coordinates(corrdenadas_heatspot)[, 2],
-    lon = st_coordinates(corrdenadas_heatspot)[, 1]
+    beach_lat = st_coordinates(corrdenadas_heatspot)[, 2],
+    beach_lon = st_coordinates(corrdenadas_heatspot)[, 1]
   )
 
-so_praias_com_heatspots <- left_join(praias_com_heatspots, pais_inteiro) %>%
-  select(-thetao, -time)
+# Function to find nearest temperature point
+find_nearest_temperature <- function(beaches_df, temp_df) {
+  # For each unique beach location
+  unique_beaches <- beaches_df %>%
+    distinct(nome_praia, Concelho, beach_lat, beach_lon)
 
-# Get all hours data
-todas_as_horas <- bind_rows(continente, madeira, acores)
-todas_as_horas$lat <- as.numeric(todas_as_horas$lat)
-todas_as_horas$lon <- as.numeric(todas_as_horas$lon)
+  # For each beach, find nearest temperature point at each time
+  results <- list()
 
-# Join beaches with hourly data
-praias_heatspots_horas <- left_join(so_praias_com_heatspots, todas_as_horas) %>%
+  for (i in 1:nrow(unique_beaches)) {
+    beach <- unique_beaches[i, ]
+
+    # Get unique times
+    unique_times <- unique(temp_df$time)
+
+    beach_temps <- data.frame()
+
+    for (t in unique_times) {
+      # Get temperature data for this time
+      temp_at_time <- temp_df %>% filter(time == t)
+
+      # Calculate distances
+      distances <- sqrt(
+        (temp_at_time$lat - beach$beach_lat)^2 +
+          (temp_at_time$lon - beach$beach_lon)^2
+      )
+
+      # Find nearest point
+      nearest_idx <- which.min(distances)
+
+      if (length(nearest_idx) > 0) {
+        temp_point <- temp_at_time[nearest_idx, ]
+        beach_temps <- rbind(beach_temps, temp_point)
+      }
+    }
+
+    # Combine beach info with temperature data
+    if (nrow(beach_temps) > 0) {
+      beach_data <- beach %>%
+        select(-beach_lat, -beach_lon) %>%
+        crossing(beach_temps)
+      results[[i]] <- beach_data
+    }
+  }
+
+  # Combine all results
+  bind_rows(results)
+}
+
+print("Finding nearest temperature points for each beach...")
+praias_heatspots_horas <- find_nearest_temperature(
+  praias_com_heatspots,
+  todas_as_horas
+)
+
+# Add back the full beach information
+praias_heatspots_horas <- praias_heatspots_horas %>%
+  left_join(
+    praias_com_heatspots %>%
+      select(-beach_lat, -beach_lon) %>%
+      st_drop_geometry()
+  )
+
+# Convert time and filter hours
+praias_heatspots_horas <- praias_heatspots_horas %>%
   mutate(time = ymd_hms(time)) %>%
-  select(-corrdenadas_heatspot, -lat, -lon)
-
-praias_heatspots_horas <- praias_heatspots_horas %>%
-  mutate(
-    lat = st_coordinates(geometry)[, 2],
-    lon = st_coordinates(geometry)[, 1]
-  ) %>%
-  select(-geometry)
-
-# Filter for hours between 8 AM and 8 PM
-praias_heatspots_horas <- praias_heatspots_horas %>%
   mutate(hours = hour(time)) %>%
   filter(hours >= 8 & hours <= 20) %>%
   select(-hours)
@@ -174,9 +213,8 @@ tectos <- tectos %>%
 
 # Final processing
 praias_heatspots_horas <- praias_heatspots_horas %>%
-  st_drop_geometry() %>%
   left_join(praias_nomes_finais) %>%
-  select(-nome_praia, -geometry) %>%
+  select(-nome_praia, -corrdenadas_heatspot, -heatspot_lat, -heatspot_lon) %>%
   rename("nome_praia" = "nome_praia_final")
 
 tectos <- tectos %>%
@@ -185,6 +223,19 @@ tectos <- tectos %>%
 praias_heatspots_horas <- praias_heatspots_horas %>%
   left_join(tectos) %>%
   replace_na(list(nome_praia = "Corvo/Areia (Corvo)"))
+
+# Check results
+print(paste(
+  "Total beaches with temperature data:",
+  n_distinct(praias_heatspots_horas$nome_praia)
+))
+print("Sample of beaches by region:")
+print(
+  praias_heatspots_horas %>%
+    distinct(nome_praia, Concelho) %>%
+    group_by(substr(Concelho, 1, 3)) %>%
+    slice(1:3)
+)
 
 # Save results
 write_rds(praias_heatspots_horas, "praias_completas.rds")
