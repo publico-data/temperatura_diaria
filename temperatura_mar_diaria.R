@@ -96,29 +96,39 @@ todas_as_horas$lon <- as.numeric(todas_as_horas$lon)
 todas_as_horas$thetao <- as.numeric(todas_as_horas$thetao)
 
 # Load beach data
-heatspots <- read_rds("coordenadas_heatspots.rds")
-heatspots <- heatspots %>%
-  rename(geometry = coordenadas_praia) %>%
-  mutate(
-    heatspot_lat = st_coordinates(geometry)[, 2],
-    heatspot_lon = st_coordinates(geometry)[, 1]
-  ) %>%
-  select(-geometry)
-
 praias_com_concelhos <- read_rds("praias_com_concelhos.rds")
 
+# Load heatspots
+heatspots <- read_rds("coordenadas_heatspots.rds")
+heatspots <- heatspots %>%
+  rename(heatspot_geometry = coordenadas_praia)
+
 # Join beaches with hotspots
-praias_com_heatspots <- left_join(praias_com_concelhos, heatspots) %>%
+praias_com_heatspots <- left_join(praias_com_concelhos, heatspots)
+
+# Extract coordinates for temperature matching
+praias_com_heatspots <- praias_com_heatspots %>%
   mutate(
-    beach_lat = st_coordinates(corrdenadas_heatspot)[, 2],
-    beach_lon = st_coordinates(corrdenadas_heatspot)[, 1]
+    # Original beach coordinates (keep these for final output)
+    beach_lat = st_coordinates(geometry)[, 2],
+    beach_lon = st_coordinates(geometry)[, 1],
+    # Heatspot coordinates (use these to find temperature)
+    heatspot_lat = st_coordinates(corrdenadas_heatspot)[, 2],
+    heatspot_lon = st_coordinates(corrdenadas_heatspot)[, 1]
   )
 
 # Function to find nearest temperature point
 find_nearest_temperature <- function(beaches_df, temp_df) {
   # For each unique beach location
   unique_beaches <- beaches_df %>%
-    distinct(nome_praia, Concelho, beach_lat, beach_lon)
+    distinct(
+      nome_praia,
+      Concelho,
+      beach_lat,
+      beach_lon,
+      heatspot_lat,
+      heatspot_lon
+    )
 
   # For each beach, find nearest temperature point at each time
   results <- list()
@@ -135,10 +145,10 @@ find_nearest_temperature <- function(beaches_df, temp_df) {
       # Get temperature data for this time
       temp_at_time <- temp_df %>% filter(time == t)
 
-      # Calculate distances
+      # Calculate distances using HEATSPOT coordinates
       distances <- sqrt(
-        (temp_at_time$lat - beach$beach_lat)^2 +
-          (temp_at_time$lon - beach$beach_lon)^2
+        (temp_at_time$lat - beach$heatspot_lat)^2 +
+          (temp_at_time$lon - beach$heatspot_lon)^2
       )
 
       # Find nearest point
@@ -152,8 +162,9 @@ find_nearest_temperature <- function(beaches_df, temp_df) {
 
     # Combine beach info with temperature data
     if (nrow(beach_temps) > 0) {
+      # Keep original beach coordinates, not heatspot coordinates
       beach_data <- beach %>%
-        select(-beach_lat, -beach_lon) %>%
+        select(-heatspot_lat, -heatspot_lon) %>%
         crossing(beach_temps)
       results[[i]] <- beach_data
     }
@@ -214,8 +225,13 @@ tectos <- tectos %>%
 # Final processing
 praias_heatspots_horas <- praias_heatspots_horas %>%
   left_join(praias_nomes_finais) %>%
-  select(-nome_praia, -corrdenadas_heatspot, -heatspot_lat, -heatspot_lon) %>%
+  select(-nome_praia, -corrdenadas_heatspot, -heatspot_geometry) %>%
   rename("nome_praia" = "nome_praia_final")
+
+# Add lat/lon columns for final output (beach coordinates, not temperature grid coordinates)
+praias_heatspots_horas <- praias_heatspots_horas %>%
+  select(-lat, -lon) %>% # Remove temperature grid coordinates
+  rename(lat = beach_lat, lon = beach_lon) # Use beach coordinates
 
 tectos <- tectos %>%
   rename("nome_praia" = "nome_praia_final")
