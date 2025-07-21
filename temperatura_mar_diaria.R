@@ -253,6 +253,9 @@ print(
     slice(1:3)
 )
 
+praias_heatspots_horas <- praias_heatspots_horas |>
+                          filter(nome_praia != "Fonte da Telha Sul")
+
 # Save results
 write_rds(praias_heatspots_horas, "praias_completas.rds")
 write_csv(praias_heatspots_horas, "praias_completas.csv")
