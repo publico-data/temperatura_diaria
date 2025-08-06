@@ -7,11 +7,17 @@ from copernicusmarine import login, subset
 # 1. Get credentials from command-line arguments
 # ----------------------
 if len(sys.argv) < 3:
-    print("Usage: python copernicus_download.py <password> <username>")
-    sys.exit(1)
+    if len(sys.argv) == 1:  # Running interactively
+        import getpass
+        pwd = getpass.getpass("Enter your Copernicus Marine password: ")
+        user = input("Enter your username: ")
+    else:
+        print("Usage: python copernicus_download.py <password> <username>")
+        sys.exit(1)
+else:
+    pwd = sys.argv[1]
+    user = sys.argv[2]
 
-pwd = sys.argv[1]
-user = sys.argv[2]
 
 # ----------------------
 # 2. Setup

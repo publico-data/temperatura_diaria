@@ -4,11 +4,6 @@ library(glue)
 library(tidyverse)
 library(sf)
 
-# Get credentials
-# For local testing - hardcoded
-# pwd <- "QTX*mkz*jbh5hgj@xqp"
-# user <- "jpinto3"
-
 # Uncomment below to use command-line arguments instead
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) < 2) {
@@ -254,7 +249,7 @@ print(
 )
 
 praias_heatspots_horas <- praias_heatspots_horas |>
-                          filter(nome_praia != "Fonte da Telha Sul")
+  filter(nome_praia != "Fonte da Telha Sul")
 
 # Save results
 write_rds(praias_heatspots_horas, "praias_completas.rds")
