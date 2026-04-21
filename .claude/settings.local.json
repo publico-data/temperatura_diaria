@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sort -t',' -k2 -n \"C:/Users/jvpinto/projects/temperatura_diaria/historico_praias.csv\")",
+      "Bash(awk -F',' 'NR>1 {print $2}')",
+      "Bash(grep -E \"\\\\.\\(html|js|jsx|tsx|ts|svelte|vue|css|json|R\\)$\")",
+      "Bash(xargs ls *)"
+    ]
+  }
+}
