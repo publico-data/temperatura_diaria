@@ -4,7 +4,6 @@ library(glue)
 library(tidyverse)
 library(sf)
 
-# Get credentials
 
 # Uncomment below to use command-line arguments instead
 args <- commandArgs(trailingOnly = TRUE)
@@ -41,7 +40,7 @@ if (
   cat("Python script output:\n")
   cat(result, sep = "\n")
   stop(
-    "Error: Python script did not create all the expected files. Check the output above."
+    "Error: Python script did not create all expected files. Check the output above."
   )
 }
 
