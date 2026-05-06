@@ -41,4 +41,5 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git add --all
-          git diff --quiet && git diff --staged --quiet || (git commit -am "add data" && git push)
+          git commit -am "add data"
+          git push
