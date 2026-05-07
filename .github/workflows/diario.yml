@@ -33,6 +33,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
+      - name: Install Python dependencies
+        run: pip install copernicusmarine
+
       - name: Import data
         run: Rscript temperatura_mar_diaria.R ${{ secrets.C_PWD }} ${{ secrets.C_USERNAME }}
 
