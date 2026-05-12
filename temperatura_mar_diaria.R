@@ -256,6 +256,10 @@ praias_heatspots_horas <- praias_heatspots_horas |>
 write_rds(praias_heatspots_horas, "praias_completas.rds")
 write_csv(praias_heatspots_horas, "praias_completas.csv")
 
+latest_time <- max(praias_heatspots_horas$time)
+write_csv(filter(praias_heatspots_horas, time == latest_time), "praias_latest.csv")
+
 print("Processing completed! Files saved:")
 print("- praias_completas.rds")
 print("- praias_completas.csv")
+print("- praias_latest.csv")
