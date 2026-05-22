@@ -195,6 +195,16 @@ praias_heatspots_horas <- praias_heatspots_horas %>%
 praias_heatspots_horas <- praias_heatspots_horas %>%
   mutate(time = round_date(time, "hour"))
 
+# Deduplicate: for each beach+time, keep only the row matched to the nearest grid point.
+# Combining continente/madeira/acores grids can produce multiple rows per beach per hour
+# when the three NetCDF files use slightly different time offsets that collapse after rounding.
+praias_heatspots_horas <- praias_heatspots_horas %>%
+  mutate(grid_dist = sqrt((as.numeric(lat) - beach_lat)^2 + (as.numeric(lon) - beach_lon)^2)) %>%
+  group_by(nome_praia, Concelho, time) %>%
+  slice_min(grid_dist, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  select(-grid_dist)
+
 # Load historical data and calculate thresholds
 historico <- read_rds("historico.rds")
 
