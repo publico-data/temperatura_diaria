@@ -1,6 +1,6 @@
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 from copernicusmarine import login, subset
 
 # ----------------------
@@ -36,12 +36,10 @@ login(user, pwd)
 output_dir = "data"
 os.makedirs(output_dir, exist_ok=True)
 
-# Set date range (today 8:00 to tomorrow 20:00)
+# Set date range (today 8:00 to today 20:00)
 today = datetime.now().date()
 start_date = datetime.combine(today, datetime.min.time()).replace(hour=8)
-end_date = datetime.combine(today + timedelta(days=1), datetime.min.time()).replace(
-    hour=20
-)
+end_date = datetime.combine(today, datetime.min.time()).replace(hour=20)
 
 
 # ----------------------
