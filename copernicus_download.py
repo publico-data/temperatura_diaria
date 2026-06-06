@@ -43,8 +43,6 @@ def download_file(dataset_id, bounds, output_file, **kwargs):
     result = subset(
         dataset_id=dataset_id,
         variables=["thetao"],
-        username=user,
-        password=pwd,
         start_datetime=start_date.strftime("%Y-%m-%d %H:%M:%S"),
         end_datetime=end_date.strftime("%Y-%m-%d %H:%M:%S"),
         minimum_longitude=bounds[0],
