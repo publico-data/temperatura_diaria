@@ -1,7 +1,7 @@
 import os
 import sys
 from datetime import datetime
-from copernicusmarine import subset
+from copernicusmarine import login, subset
 
 # ----------------------
 # 1. Get credentials from command-line arguments
@@ -22,6 +22,17 @@ else:
 # ----------------------
 # 2. Setup
 # ----------------------
+# Remove stale credentials/cache to avoid conflicts across runs
+credentials_file = os.path.expanduser(
+    "~/.copernicusmarine/.copernicusmarine-credentials"
+)
+if os.path.exists(credentials_file):
+    os.remove(credentials_file)
+
+# Authenticate once — v1.x caches the result for 48h so the three
+# subset() calls below don't need to re-contact the auth server.
+login(username=user, password=pwd)
+
 # Create output directory
 output_dir = "data"
 os.makedirs(output_dir, exist_ok=True)
