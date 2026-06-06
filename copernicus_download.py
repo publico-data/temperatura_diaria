@@ -18,21 +18,10 @@ else:
     pwd = sys.argv[1]
     user = sys.argv[2]
 
-# Expose credentials as environment variables so copernicusmarine picks them
-# up automatically — avoids calling login() which fails in CI environments.
-os.environ.setdefault("COPERNICUSMARINE_SERVICE_USERNAME", user)
-os.environ.setdefault("COPERNICUSMARINE_SERVICE_PASSWORD", pwd)
 
 # ----------------------
 # 2. Setup
 # ----------------------
-# Remove stale credentials file to prevent conflicts with env-var auth
-credentials_file = os.path.expanduser(
-    "~/.copernicusmarine/.copernicusmarine-credentials"
-)
-if os.path.exists(credentials_file):
-    os.remove(credentials_file)
-
 # Create output directory
 output_dir = "data"
 os.makedirs(output_dir, exist_ok=True)
@@ -54,6 +43,8 @@ def download_file(dataset_id, bounds, output_file, **kwargs):
     result = subset(
         dataset_id=dataset_id,
         variables=["thetao"],
+        username=user,
+        password=pwd,
         start_datetime=start_date.strftime("%Y-%m-%d %H:%M:%S"),
         end_datetime=end_date.strftime("%Y-%m-%d %H:%M:%S"),
         minimum_longitude=bounds[0],
