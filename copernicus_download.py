@@ -1,7 +1,7 @@
 import os
 import sys
 from datetime import datetime
-from copernicusmarine import login, subset
+from copernicusmarine import subset
 
 # ----------------------
 # 1. Get credentials from command-line arguments
@@ -18,19 +18,20 @@ else:
     pwd = sys.argv[1]
     user = sys.argv[2]
 
+# Expose credentials as environment variables so copernicusmarine picks them
+# up automatically — avoids calling login() which fails in CI environments.
+os.environ.setdefault("COPERNICUSMARINE_SERVICE_USERNAME", user)
+os.environ.setdefault("COPERNICUSMARINE_SERVICE_PASSWORD", pwd)
 
 # ----------------------
 # 2. Setup
 # ----------------------
-# Check and delete existing credentials file if it exists
+# Remove stale credentials file to prevent conflicts with env-var auth
 credentials_file = os.path.expanduser(
     "~/.copernicusmarine/.copernicusmarine-credentials"
 )
 if os.path.exists(credentials_file):
     os.remove(credentials_file)
-
-# Login
-login(user, pwd)
 
 # Create output directory
 output_dir = "data"

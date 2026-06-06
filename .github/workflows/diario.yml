@@ -14,6 +14,8 @@ jobs:
     env:
       C_PWD: ${{ secrets.C_PWD }}
       C_USERNAME: ${{ secrets.C_USERNAME }}
+      COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.C_USERNAME }}
+      COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.C_PWD }}
     steps:
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
