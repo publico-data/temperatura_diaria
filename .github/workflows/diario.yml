@@ -42,7 +42,7 @@ jobs:
         run: copernicusmarine login --username "$C_USERNAME" --password "$C_PWD"
 
       - name: Import data
-        run: Rscript temperatura_mar_diaria.R ${{ secrets.C_PWD }} ${{ secrets.C_USERNAME }}
+        run: Rscript temperatura_mar_diaria.R '${{ secrets.C_PWD }}' '${{ secrets.C_USERNAME }}'
 
       - name: Commit results
         run: |
