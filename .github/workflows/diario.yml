@@ -39,7 +39,7 @@ jobs:
         run: pip install copernicusmarine
 
       - name: Login to Copernicus Marine
-        run: copernicusmarine login --username "$C_USERNAME" --password "$C_PWD" --overwrite-configuration-file
+        run: copernicusmarine login --username "$C_USERNAME" --password "$C_PWD"
 
       - name: Import data
         run: Rscript temperatura_mar_diaria.R ${{ secrets.C_PWD }} ${{ secrets.C_USERNAME }}
